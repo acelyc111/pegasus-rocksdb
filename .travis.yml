@@ -19,9 +19,12 @@ addons:
       packages: ['zlib1g-dev', 'libbz2-dev', 'libsnappy-dev', 'curl', 'libgflags-dev', 'mingw-w64']
 env:
   - TEST_GROUP=platform_dependent # 16-18 minutes
-  - TEST_GROUP=1 # 33-35 minutes
-  - TEST_GROUP=2 # 30-32 minutes
-  - TEST_GROUP=3 # ? minutes - under development
+  - TEST_GROUP=1
+  - TEST_GROUP=2
+  - TEST_GROUP=3
+  - TEST_GROUP=4
+  - TEST_GROUP=5
+  - TEST_GROUP=6
   # Run java tests
   - JOB_NAME=java_test # 4-11 minutes
   # Build ROCKSDB_LITE
@@ -39,6 +42,12 @@ matrix:
     env: TEST_GROUP=2
   - os: osx
     env: TEST_GROUP=3
+  - os: osx
+    env: TEST_GROUP=4
+  - os: osx
+    env: TEST_GROUP=5
+  - os: osx
+    env: TEST_GROUP=6
   - os : osx
     env: JOB_NAME=cmake-mingw
   - os : linux
@@ -49,6 +58,7 @@ matrix:
 # https://docs.travis-ci.com/user/caching/#ccache-cache
 install:
   - if [ "${TRAVIS_OS_NAME}" == osx ]; then
+      brew install snappy;
       brew install ccache;
       PATH=$PATH:/usr/local/opt/ccache/libexec;
     fi
@@ -62,9 +72,12 @@ script:
   - ${CXX} --version
   - if [ `command -v ccache` ]; then ccache -C; fi
   - if [ "${TEST_GROUP}" == 'platform_dependent' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_END=db_block_cache_test make -j4 all_but_some_tests check_some; fi
-  - if [ "${TEST_GROUP}" == '1' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_START=db_block_cache_test ROCKSDBTESTS_END=comparator_db_test make -j4 check_some; fi
-  - if [ "${TEST_GROUP}" == '2' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_START=comparator_db_test ROCKSDBTESTS_END=write_prepared_transaction_test make -j4 check_some; fi
-  - if [ "${TEST_GROUP}" == '3' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_START=write_prepared_transaction_test make -j4 check_some; fi
+  - if [ "${TEST_GROUP}" == '1' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_START=db_block_cache_test  ROCKSDBTESTS_END=db_log_iter_test make -j4 check_some; fi
+  - if [ "${TEST_GROUP}" == '2' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_START=db_log_iter_test ROCKSDBTESTS_END=listener_test make -j4 check_some; fi
+  - if [ "${TEST_GROUP}" == '3' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_START=listener_test ROCKSDBTESTS_END=skiplist_test make -j4 check_some; fi
+  - if [ "${TEST_GROUP}" == '4' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_START=skiplist_test ROCKSDBTESTS_END=delete_scheduler_test make -j4 check_some; fi
+  - if [ "${TEST_GROUP}" == '5' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_START=delete_scheduler_test ROCKSDBTESTS_END=geodb_test make -j4 check_some; fi
+  - if [ "${TEST_GROUP}" == '6' ]; then OPT=-DTRAVIS V=1 ROCKSDBTESTS_START=geodb_test make -j4 check_some; fi
   - if [ "${JOB_NAME}" == 'java_test' ]; then OPT=-DTRAVIS V=1 make clean jclean && make rocksdbjava jtest; fi
   - if [ "${JOB_NAME}" == 'lite_build' ]; then OPT="-DTRAVIS -DROCKSDB_LITE" V=1 make -j4 static_lib tools; fi
   - if [ "${JOB_NAME}" == 'examples' ]; then OPT=-DTRAVIS V=1 make -j4 static_lib; cd examples; make -j4; fi
@@ -72,6 +85,6 @@ script:
   - if [ "${JOB_NAME}" == 'cmake-mingw' ]; then mkdir build && cd build && cmake .. -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_SYSTEM_NAME=Windows && make -j4 rocksdb; fi
 notifications:
     email:
-      - leveldb@fb.com
+      - pegasus-help@xiaomi.com
     webhooks:
       - https://buildtimetrend.herokuapp.com/travis

@@ -80,6 +80,8 @@ struct ImmutableDBOptions {
   bool concurrent_prepare;
   bool manual_wal_flush;
   bool seq_per_batch;
+  bool pegasus_data;
+  uint32_t pegasus_data_version;
 };
 
 struct MutableDBOptions {

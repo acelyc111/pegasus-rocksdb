@@ -221,6 +221,7 @@ Status DBImpl::NewDB() {
   new_db.SetLogNumber(0);
   new_db.SetNextFile(2);
   new_db.SetLastSequence(0);
+  new_db.SetPegasusDataVersion(immutable_db_options_.pegasus_data_version);
 
   Status s;
 

@@ -161,10 +161,12 @@ class WriteBatchInternal {
                            bool ignore_missing_column_families = false,
                            uint64_t log_number = 0, DB* db = nullptr,
                            bool concurrent_memtable_writes = false,
-                           bool seq_per_batch = false);
+                           bool seq_per_batch = false,
+                           uint64_t decree = 0,
+                           bool pegasus_data = false);
 
   // Convenience form of InsertInto when you have only one batch
-  // next_seq returns the seq after last sequnce number used in MemTable insert
+  // next_seq returns the seq after last sequence number used in MemTable insert
   static Status InsertInto(const WriteBatch* batch,
                            ColumnFamilyMemTables* memtables,
                            FlushScheduler* flush_scheduler,

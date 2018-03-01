@@ -921,6 +921,14 @@ struct DBOptions {
   // Note: This option is experimental and meant to be used only for internal
   // projects.
   bool seq_per_batch = false;
+
+  // Whether the data is for Pegasus.
+  // Default: false
+  bool pegasus_data = false;
+
+  // Pegasus data version.
+  // Default: 0
+  uint32_t pegasus_data_version = 0;
 };
 
 // Options to control the behavior of a database (passed to DB::Open)
@@ -1149,12 +1157,16 @@ struct WriteOptions {
   // Default: false
   bool low_pri;
 
+  // Decree is an value affiliated to the write.
+  uint64_t given_decree;
+
   WriteOptions()
       : sync(false),
         disableWAL(false),
         ignore_missing_column_families(false),
         no_slowdown(false),
-        low_pri(false) {}
+        low_pri(false),
+        given_decree(0) {}
 };
 
 // Options that control flush operations

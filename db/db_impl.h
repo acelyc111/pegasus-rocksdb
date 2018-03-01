@@ -231,6 +231,12 @@ class DBImpl : public DB {
   bool HasActiveSnapshotInRange(SequenceNumber lower_bound,
                                 SequenceNumber upper_bound);
 
+  virtual uint64_t GetLastFlushedDecree() const override;
+
+  virtual uint32_t GetPegasusDataVersion() const override;
+
+  virtual uint64_t GetLastManualCompactFinishTime() const override;
+
 #ifndef ROCKSDB_LITE
   using DB::ResetStats;
   virtual Status ResetStats() override;
@@ -241,6 +247,10 @@ class DBImpl : public DB {
   virtual Status GetLiveFiles(std::vector<std::string>&,
                               uint64_t* manifest_file_size,
                               bool flush_memtable = true) override;
+  virtual Status GetLiveFilesQuick(std::vector<std::string>& ret,
+                                   uint64_t* manifest_file_size,
+                                   SequenceNumber* last_sequence,
+                                   uint64_t* last_decree) const override;
   virtual Status GetSortedWalFiles(VectorLogPtr& files) override;
 
   virtual Status GetUpdatesSince(
@@ -828,6 +838,8 @@ class DBImpl : public DB {
   // Used by WriteImpl to update bg_error_ in case of memtable insert error.
   void MemTableInsertStatusCheck(const Status& memtable_insert_status);
 
+  Status UpdateManualCompactTime(ColumnFamilyHandle* column_family);
+
 #ifndef ROCKSDB_LITE
 
   Status CompactFilesImpl(const CompactionOptions& compact_options,
@@ -1322,6 +1334,7 @@ class DBImpl : public DB {
   const bool concurrent_prepare_;
   const bool manual_wal_flush_;
   const bool seq_per_batch_;
+  const bool pegasus_data_;
   const bool use_custom_gc_;
 
   // Clients must periodically call SetPreserveDeletesSequenceNumber()
