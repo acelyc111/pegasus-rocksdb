@@ -104,21 +104,8 @@ bool VersionEdit::EncodeTo(std::string* dst) const {
   if (has_last_sequence_) {
     PutVarint32Varint64(dst, kLastSequence, last_sequence_);
   }
-  if (has_last_flush_seq_decree_) {
-    PutVarint32(dst, kLastFlushSeqDecree);
-    PutVarint64(dst, last_flush_sequence_);
-    PutVarint64(dst, last_flush_decree_);
-  }
   if (has_max_column_family_) {
     PutVarint32Varint32(dst, kMaxColumnFamily, max_column_family_);
-  }
-  if (has_pegasus_data_version_) {
-    PutVarint32(dst, kValueSchemaVersion);
-    PutVarint32(dst, pegasus_data_version_);
-  }
-  if (has_last_manual_compact_finish_time_) {
-    PutVarint32(dst, kLastManualCompactFinishTime);
-    PutVarint64(dst, last_manual_compact_finish_time_);
   }
 
   for (const auto& deleted : deleted_files_) {

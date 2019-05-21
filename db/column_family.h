@@ -485,7 +485,7 @@ class ColumnFamilySet {
   uint32_t GetPegasusDataVersion() const;
   void SetPegasusDataVersion(uint32_t version);
   uint64_t GetLastManualCompactFinishTime() const;
-  void SetLastManualCompactFinishTime(uint64_t ms);
+  Status SetLastManualCompactFinishTime(uint32_t id, uint64_t ms);
   ColumnFamilyData* CreateColumnFamily(const std::string& name, uint32_t id,
                                        Version* dummy_version,
                                        const ColumnFamilyOptions& options);

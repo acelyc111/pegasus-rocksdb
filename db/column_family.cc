@@ -1084,8 +1084,10 @@ uint64_t ColumnFamilySet::GetLastManualCompactFinishTime() const {
   return last_manual_compact_finish_time_;
 }
 
-void ColumnFamilySet::SetLastManualCompactFinishTime(uint64_t ms) {
+Status ColumnFamilySet::SetLastManualCompactFinishTime(uint32_t id, uint64_t ms) {
   last_manual_compact_finish_time_ = ms;
+  // TODO(yingchun): write to another cf to persistent.
+  return Status::OK();
 }
 
 // under a DB mutex AND write thread

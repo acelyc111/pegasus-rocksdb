@@ -222,7 +222,7 @@ class VersionEdit {
     *decree = last_flush_decree_;
   }
 
-  void UpdateLastFlushSeqDecree(SequenceNumber sequence, uint64_t decree) {
+  void UpdateLastFlushSeqDecreeIfNeeded(SequenceNumber sequence, uint64_t decree) {
     if (sequence > last_flush_sequence_) {
       assert(decree >= last_flush_decree_);
       last_flush_sequence_ = sequence;
@@ -317,6 +317,8 @@ class VersionEdit {
   uint64_t next_file_number_;
   uint32_t max_column_family_;
   uint32_t pegasus_data_version_;
+  // TODO(yingchun): last_manual_compact_finish_time_, last_flush_sequence_ and last_flush_decree_
+  // should be persistent in another CF.
   uint64_t last_manual_compact_finish_time_;
   SequenceNumber last_sequence_;
   // Used to mark the last sequence/decree of flushed memtables.

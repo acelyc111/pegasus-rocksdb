@@ -2475,6 +2475,7 @@ void VersionSet::AppendVersion(ColumnFamilyData* column_family_data,
   assert(v != current);
   if (current != nullptr) {
     assert(current->refs_ > 0);
+    // TODO(yingchun) another CF
     if (db_options_->pegasus_data) {
       // inherit last sequence/decree from old version, but for flush the old
       // value would not take effect.
@@ -2598,6 +2599,8 @@ Status VersionSet::LogAndApply(ColumnFamilyData* column_family_data,
       w.edit_list.front()->SetMaxColumnFamily(
           column_family_set_->GetMaxColumnFamily());
     }
+
+    // TODO(yingchun) another CF
     // also we need to persist Pegasus data version
     w.edit_list.front()->SetPegasusDataVersion(
         column_family_set_->GetPegasusDataVersion());
@@ -2797,7 +2800,7 @@ void VersionSet::LogAndApplyCFHelper(VersionEdit* edit) {
     SequenceNumber seq;
     uint64_t d;
     column_family_set_->GetDefault()->current()->GetLastFlushSeqDecree(&seq, &d);
-    edit->UpdateLastFlushSeqDecree(seq, d);
+    edit->UpdateLastFlushSeqDecreeIfNeeded(seq, d);
   }
   if (edit->is_column_family_drop_) {
     // if we drop column family, we have to make sure to save max column family,
@@ -2834,7 +2837,7 @@ void VersionSet::LogAndApplyHelper(ColumnFamilyData* cfd,
     SequenceNumber seq;
     uint64_t d;
     column_family_set_->GetDefault()->current()->GetLastFlushSeqDecree(&seq, &d);
-    edit->UpdateLastFlushSeqDecree(seq, d);
+    edit->UpdateLastFlushSeqDecreeIfNeeded(seq, d);
   }
 
   uint64_t ms = column_family_set_->GetLastManualCompactFinishTime();

@@ -155,7 +155,7 @@ void FlushJob::PickMemTable() {
       SequenceNumber seq;
       uint64_t d;
       mem->GetLastSeqDecree(&seq, &d);
-      edit_->UpdateLastFlushSeqDecree(seq, d);
+      edit_->UpdateLastFlushSeqDecreeIfNeeded(seq, d);
     }
   }
 
