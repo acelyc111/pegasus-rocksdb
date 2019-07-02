@@ -3102,7 +3102,7 @@ Status VersionSet::Recover(
 
     column_family_set_->UpdateMaxColumnFamily(max_column_family);
     column_family_set_->SetPegasusDataVersion(pegasus_data_version);
-    column_family_set_->SetLastManualCompactFinishTime(last_manual_compact_finish_time);
+    column_family_set_->SetLastManualCompactFinishTime(0, last_manual_compact_finish_time);
 
     MarkFileNumberUsed(previous_log_number);
     MarkFileNumberUsed(log_number);
@@ -3519,7 +3519,8 @@ Status VersionSet::DumpManifest(Options& options, std::string& dscname,
       }
 
       if (edit.has_last_manual_compact_finish_time_) {
-        column_family_set_->SetLastManualCompactFinishTime(edit.last_manual_compact_finish_time_);
+        column_family_set_->SetLastManualCompactFinishTime(
+            edit.column_family_, edit.last_manual_compact_finish_time_);
       }
     }
   }
