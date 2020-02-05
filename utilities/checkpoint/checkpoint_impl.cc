@@ -54,8 +54,6 @@ Status Checkpoint::CreateCheckpointQuick(const std::string& checkpoint_dir,
 Status CheckpointImpl::CreateCheckpoint(const std::string& checkpoint_dir,
                                         uint64_t log_size_for_flush) {
   DBOptions db_options = db_->GetDBOptions();
-  // ATTENTION(laiyingchun): log_size_for_flush should always be 0 in pegasus.
-  assert(!db_options.pegasus_data || log_size_for_flush == 0);
 
   Status s = db_->GetEnv()->FileExists(checkpoint_dir);
   if (s.ok()) {

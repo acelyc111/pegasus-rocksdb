@@ -157,9 +157,6 @@ Status DBImpl::GetLiveFilesQuick(std::vector<std::string>& ret,
 
   mutex_.Lock();
 
-  // ATTENTION(qinzuoyan): only use default column family.
-  assert(versions_->GetColumnFamilySet()->NumberOfColumnFamilies() == 1u);
-
   // Make a set of all of the live *.sst files
   std::vector<FileDescriptor> live;
   for (auto cfd : *versions_->GetColumnFamilySet()) {
