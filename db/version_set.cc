@@ -2475,7 +2475,7 @@ void VersionSet::AppendVersion(ColumnFamilyData* column_family_data,
   assert(v != current);
   if (current != nullptr) {
     assert(current->refs_ > 0);
-    if (db_options_->pegasus_data) {
+    if (db_options_->pegasus_data && column_family_data->GetID() == 0) {
       // inherit last sequence/decree from old version, but for flush the old
       // value would not take effect.
       SequenceNumber seq;
@@ -2723,7 +2723,7 @@ Status VersionSet::LogAndApply(ColumnFamilyData* column_family_data,
           max_log_number_in_batch =
               std::max(max_log_number_in_batch, e->log_number_);
         }
-        if (db_options_->pegasus_data) {
+        if (db_options_->pegasus_data && column_family_data->GetID() == 0) {
           // update last flush sequence/decree from VersionEdit
           SequenceNumber seq;
           uint64_t d;
@@ -3151,7 +3151,7 @@ Status VersionSet::Recover(
           new Version(cfd, this, env_options_, current_version_number_++);
       builder->SaveTo(v->storage_info());
 
-      if (db_options_->pegasus_data) {
+      if (db_options_->pegasus_data && cfd->GetID() == 0) {
         // update last flush sequence/decree
         auto &p = last_flush_seq_decree_map[cfd->GetID()];
         v->UpdateLastFlushSeqDecreeIfNeeded(p.first, p.second);
@@ -3547,8 +3547,10 @@ Status VersionSet::DumpManifest(Options& options, std::string& dscname,
           new Version(cfd, this, env_options_, current_version_number_++);
       builder->SaveTo(v->storage_info());
 
-      auto& p = last_flush_seq_decree_map[cfd->GetID()];
-      v->UpdateLastFlushSeqDecreeIfNeeded(p.first, p.second);
+      if (cfd->GetID() == 0) {
+        auto& p = last_flush_seq_decree_map[cfd->GetID()];
+        v->UpdateLastFlushSeqDecreeIfNeeded(p.first, p.second);
+      }
 
       v->PrepareApply(*cfd->GetLatestMutableCFOptions(), false);
 

@@ -164,7 +164,7 @@ Status DBImpl::GetLiveFilesQuick(std::vector<std::string>& ret,
       continue;
     }
     cfd->current()->AddLiveFiles(&live);
-    if (cfd->GetName() != kDefaultColumnFamilyName) {
+    if (cfd->GetID() != 0) {
       continue;
     }
     // get last sequence/decree
