@@ -3064,7 +3064,7 @@ Status VersionSet::Recover(
         have_last_sequence = true;
       }
 
-      if (edit.has_last_flush_seq_decree_) {
+      if (edit.has_last_flush_seq_decree_ && edit.column_family_ == 0) {
         auto& p = last_flush_seq_decree_map[edit.column_family_];
         if (edit.last_flush_sequence_ > p.first) {
           assert(edit.last_flush_decree_ >= p.second);
